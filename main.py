@@ -43,12 +43,12 @@ class AlienAttack:
             if self.settings.GameSize == self.settings.SmallGameSize:
                 self.screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
                 self.settings.GameSize = (self.screen.get_rect().width,self.screen.get_rect().height)
-                self.ship.rect.midbottom = (self.ship.x,self.settings.GameSize[1])
+                self.ship.rect.midbottom = (self.ship.rect.x,self.settings.GameSize[1])
             else:
                 self.settings.GameSize = self.settings.SmallGameSize
                 self.screen = pygame.display.set_mode(self.settings.GameSize)
                 pygame.display.set_caption(self.settings.WindowName)
-                self.ship.rect.midbottom = (self.ship.x,self.settings.SmallGameSize[1])
+                self.ship.rect.midbottom = (self.ship.rect.x,self.settings.SmallGameSize[1])
 
     
     def _check_keyup_events(self,event):

@@ -4,4 +4,4 @@ class Settings:
         self.GameSize = self.SmallGameSize
         self.WindowName = "Alien Attack"
         self.bg_color = (230,230,230)
-        self.Ship_Speed = 1.5
+        self.Ship_Speed = 2
