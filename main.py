@@ -85,9 +85,27 @@ class AlienAttack:
             if bullet.rect.bottom <=0:
                 self.bullets.remove(bullet)
 
+    def _create_alien(self, curr_x, curr_y):
+        new_alien = Alien(self)
+        new_alien.x = curr_x
+        new_alien.y = curr_y
+        new_alien.rect.x = curr_x
+        new_alien.rect.y = curr_y
+        self.aliens.add(new_alien)
+
     def _create_fleet(self):
         alien = Alien(self)
-        self.aliens.add(alien)
+        alien_width, alien_height = alien.rect.size
+        curr_x, curr_y = alien_width, alien_height
+
+        while curr_y < (self.settings.SmallGameSize[1] - 3*alien_height):
+            while curr_x < (self.settings.SmallGameSize[0] - 2*alien_width):
+                self._create_alien(curr_x, curr_y)
+                curr_x += 2* alien_width
+            curr_x = alien_width
+            curr_y += 2*alien_height
+
+
 if __name__ == '__main__':
     ai = AlienAttack()
     ai.run_game()
