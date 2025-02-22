@@ -26,6 +26,7 @@ class AlienAttack:
             self._check_events()
             self.ship.update(self)
             self._update_bullets()
+            self._update_aliens()
             self._update_screen()
             self.clock.tick(60)
 
@@ -50,11 +51,6 @@ class AlienAttack:
                 self.screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
                 self.settings.GameSize = (self.screen.get_rect().width,self.screen.get_rect().height)
                 self.ship.rect.midbottom = (self.ship.rect.x,self.settings.GameSize[1])
-            else:
-                self.settings.GameSize = self.settings.SmallGameSize
-                self.screen = pygame.display.set_mode(self.settings.GameSize)
-                pygame.display.set_caption(self.settings.WindowName)
-                self.ship.rect.midbottom = (self.ship.rect.x,self.settings.SmallGameSize[1])
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
 
@@ -80,10 +76,17 @@ class AlienAttack:
 
     def _update_bullets(self):
         self.bullets.update()
-
         for bullet in self.bullets.copy():
             if bullet.rect.bottom <=0:
                 self.bullets.remove(bullet)
+        self._check_alien_bullet_collistions()
+        
+
+    def _check_alien_bullet_collistions(self):
+        collisions = pygame.sprite.groupcollide(self.bullets,self.aliens,True,True)
+        if not self.aliens:
+            self.bullets.empty()
+            self._create_fleet()
 
     def _create_alien(self, curr_x, curr_y):
         new_alien = Alien(self)
@@ -105,7 +108,21 @@ class AlienAttack:
             curr_x = alien_width
             curr_y += 2*alien_height
 
+    def _update_aliens(self):
+        self._check_fleet_edges()
+        self.aliens.update()
 
+    def _check_fleet_edges(self):
+        for alien in self.aliens.sprites():
+            if alien.check_edges():
+                self._change_fleet_direction()
+                break
+    
+    def _change_fleet_direction(self):
+        for alien in self.aliens.sprites():
+            alien.rect.y += self.settings.fleet_drop_speed
+        self.settings.fleet_direction *= -1
+    
 if __name__ == '__main__':
     ai = AlienAttack()
     ai.run_game()
