@@ -20,9 +20,8 @@ class AlienAttack:
         while True:
             self._check_events()
             self.ship.update(self)
-            self.bullets.update()
+            self._update_bullets()
             self._update_screen()
-            
             self.clock.tick(60)
 
     def _check_events(self):
@@ -70,8 +69,16 @@ class AlienAttack:
         pygame.display.flip()
 
     def _fire_bullet(self):
-        new_bullet = Bullet(self)
-        self.bullets.add(new_bullet)
+        if len(self.bullets) < self.settings.bullet_allowed:
+            new_bullet = Bullet(self)
+            self.bullets.add(new_bullet)
+
+    def _update_bullets(self):
+        self.bullets.update()
+
+        for bullet in self.bullets.copy():
+            if bullet.rect.bottom <=0:
+                self.bullets.remove(bullet)
 
 if __name__ == '__main__':
     ai = AlienAttack()
