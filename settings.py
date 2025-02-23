@@ -7,7 +7,7 @@ class Settings:
 
 
         self.Ship_Speed = 2
-        self.ship_limit = 1
+        self.ship_limit = 3
         
         
         self.bullet_speed = 2.5

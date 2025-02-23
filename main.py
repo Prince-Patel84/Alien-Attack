@@ -62,11 +62,14 @@ class AlienAttack:
             self.ship.moving_left = True
         elif event.key == pygame.K_ESCAPE:
             sys.exit()
-        elif event.key == pygame.K_F11:
+        elif event.key == pygame.K_F11 and not self.game_active:
             if self.settings.GameSize == self.settings.SmallGameSize:
                 self.screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
                 self.settings.GameSize = (self.screen.get_rect().width,self.screen.get_rect().height)
-                self.ship.rect.midbottom = (self.ship.rect.x,self.settings.GameSize[1])
+                self.ship.center_ship()
+                del self.sb
+                self.sb = Scoreboard(self)
+
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
         elif event.key == pygame.K_p:
@@ -82,6 +85,8 @@ class AlienAttack:
     def _start_game(self):
         self.stats.reset_stats()
         self.sb.prep_score()
+        self.sb.prep_level()
+        self.sb.prep_ships()
         self.game_active = True
         self.bullets.empty()
         self.aliens.empty()
@@ -130,10 +135,14 @@ class AlienAttack:
             self.bullets.empty()
             self._create_fleet()
             self.settings.increase_speed()
+            self.stats.level +=1
+            self.stats.score = 0
+            self.sb.prep_level()
         if collisions:
             for aliens in collisions.values():
                 self.stats.score += self.settings.alien_points * len(aliens)
             self.sb.prep_score()
+            self.sb.check_high_score()
 
     def _create_alien(self, curr_x, curr_y):
         new_alien = Alien(self)
@@ -177,7 +186,7 @@ class AlienAttack:
     def _ship_hit(self):
         if self.stats.ships_left > 0:
             self.stats.ships_left -= 1
-
+            self.sb.prep_ships()
             self.aliens.empty()
             self.bullets.empty()
 
