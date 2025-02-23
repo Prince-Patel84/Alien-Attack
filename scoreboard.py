@@ -1,5 +1,6 @@
 import pygame.font
 from pygame.sprite import Group
+from pathlib import Path
 from ship import Ship
 
 class Scoreboard:
@@ -41,6 +42,8 @@ class Scoreboard:
     def check_high_score(self):
         if self.stats.score > self.stats.high_score:
             self.stats.high_score = self.stats.score
+            path = Path("high_score.txt")
+            path.write_text(str(self.stats.high_score))
             self.prep_high_score()
 
     def prep_level(self):

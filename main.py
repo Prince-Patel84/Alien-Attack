@@ -1,5 +1,6 @@
 import sys
 from time import sleep
+from pathlib import Path
 
 import pygame
 
@@ -20,6 +21,8 @@ class AlienAttack:
         self.screen = pygame.display.set_mode(self.settings.GameSize)
         pygame.display.set_caption(self.settings.WindowName)
 
+        self.path = Path("high_score.txt")
+        
         self.stats = GameStats(self)
         self.sb = Scoreboard(self)
 
@@ -32,6 +35,8 @@ class AlienAttack:
         self.game_active = False
 
         self.play_button = Button(self,"Play")
+
+
 
     def run_game(self):
         while True:
@@ -61,6 +66,7 @@ class AlienAttack:
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = True
         elif event.key == pygame.K_ESCAPE:
+            self.path.write_text(str(self.stats.high_score))
             sys.exit()
         elif event.key == pygame.K_F11 and not self.game_active:
             if self.settings.GameSize == self.settings.SmallGameSize:
@@ -90,7 +96,7 @@ class AlienAttack:
         self.game_active = True
         self.bullets.empty()
         self.aliens.empty()
-
+        
         self._create_fleet()
         self.ship.center_ship()
 
@@ -192,9 +198,12 @@ class AlienAttack:
 
             self._create_fleet()
             self.ship.center_ship()
+            self.sb.check_high_score()
         else:
             self.game_active = False
+            self.sb.check_high_score()
             pygame.mouse.set_visible(True)
+
         sleep(0.5)
 
     def _check_aliens_bottom(self):
