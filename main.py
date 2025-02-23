@@ -8,6 +8,7 @@ from game_ststs import GameStats
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
+from button import Button
 
 class AlienAttack:
     def __init__(self):
@@ -26,7 +27,9 @@ class AlienAttack:
 
         self._create_fleet()
 
-        self.game_active = True
+        self.game_active = False
+
+        self.play_button = Button(self,"Play")
 
     def run_game(self):
         while True:
@@ -42,6 +45,9 @@ class AlienAttack:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                self._check_play_button(mouse_pos)
             elif event.type == pygame.KEYDOWN:
                 self._check_keydown_events(event)
             elif event.type == pygame.KEYUP:
@@ -52,7 +58,7 @@ class AlienAttack:
             self.ship.moving_right = True
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = True
-        elif event.key == pygame.K_q:
+        elif event.key == pygame.K_ESCAPE:
             sys.exit()
         elif event.key == pygame.K_F11:
             if self.settings.GameSize == self.settings.SmallGameSize:
@@ -69,12 +75,20 @@ class AlienAttack:
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = False
 
+    def _check_play_button(self, mouse_pos):
+        if self.play_button.rect.collidepoint(mouse_pos):
+            self.game_active = True
+
     def _update_screen(self):
         self.screen.fill(self.settings.bg_color)
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.ship.blitme(self)
         self.aliens.draw(self.screen)
+
+        if not self.game_active:
+            self.play_button._draw_button()
+
         pygame.display.flip()
 
     def _fire_bullet(self):
